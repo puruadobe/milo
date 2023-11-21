@@ -86,18 +86,18 @@ const getTargetPersonalization = async () => {
   return manifests;
 };
 
-const getDtmLib = (env) => ({
-  edgeConfigId: env.consumer?.edgeConfigId || env.edgeConfigId,
+const getDtmLib = (config) => ({
+  edgeConfigId: config.env.consumer?.edgeConfigId || config.env.edgeConfigId,
   url:
-    env.name === 'prod'
-      ? env.consumer?.marTechUrl || 'https://assets.adobedtm.com/d4d114c60e50/a0e989131fd5/launch-5dd5dd2177e6.min.js'
-      : env.consumer?.marTechUrl || 'https://assets.adobedtm.com/d4d114c60e50/a0e989131fd5/launch-a27b33fc2dc0-development.min.js',
+    config.env.name === 'prod'
+      ? config.env.consumer?.marTechUrl || `${config.miloLibs || config.codeRoot}/deps/launch-5dd5dd2177e6.js`
+      : config.env.consumer?.marTechUrl || `${config.miloLibs || config.codeRoot}/deps/launch-5dd5dd2177e6.js`,
 });
 
 export default async function init({ persEnabled = false, persManifests }) {
   const config = getConfig();
 
-  const { url, edgeConfigId } = getDtmLib(config.env);
+  const { url, edgeConfigId } = getDtmLib(config);
   loadLink(url, { as: 'script', rel: 'preload' });
 
   if (persEnabled) {
@@ -128,7 +128,7 @@ export default async function init({ persEnabled = false, persManifests }) {
   };
   window.edgeConfigId = edgeConfigId;
 
-  await loadScript(`${config.miloLibs || config.codeRoot}/deps/martech.main.standard.min.js`);
+  await loadScript(`${config.miloLibs || config.codeRoot}/deps/martech.main.standard.js`);
   // eslint-disable-next-line no-underscore-dangle
   window._satellite.track('pageload');
 
